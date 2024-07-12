@@ -3,10 +3,11 @@ import { useState, useEffect, Suspense } from "react";
 import { MdArrowBackIos, MdDelete } from "react-icons/md";
 import {useSearchParams } from "react-router-dom";
 import Loader from "../../components/loader/loader";
-import { Log, Profile,Groups, Deletegroup } from "./log.js";
+import { Log, Profile,Groups, Deletegroup,Exitgroup } from "./log.js";
 import { io } from "socket.io-client";
 import GroupScreen from "../../components/groupscreen/screen.jsx";
 import { useNavigate } from "react-router-dom";
+import { IoMdExit } from "react-icons/io";
 const userd = window.localStorage.getItem("userid")
     
 const SERVER_URL = "https://swiftback.onrender.com";
@@ -147,6 +148,27 @@ export default function Group() {
       }
     }
   }}
+  const handleExit = async() =>{
+    const confirmed = window.confirm(
+      "Leave this group ?"
+    );
+    if (confirmed){
+    try{
+     const response = await Exitgroup(forum)
+     if(response.success){
+      alert(response.message)
+      router(-1)
+     }
+     else{
+      alert(response.message)
+     }
+    }
+    catch(error){
+      if(error && error.message){
+        alert(error.message)
+      }
+    }
+  }}
 
   return (
     <>
@@ -165,8 +187,10 @@ export default function Group() {
             </span>
           </div>
           <span className="flex w-auto h-auto">
-            { admin === userd && (
+            { admin === userd ? (
               <MdDelete className="fill-red-600 mx-2 cursor-pointer" size={20} onClick={() => handleGroupDeletion()}/>
+            ) :(
+              <IoMdExit className="fill-red-600 mx-2 cursor-pointer" size={20} onClick={() => handleExit()}/>
             )}
           </span>
         </header>
